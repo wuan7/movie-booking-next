@@ -19,7 +19,6 @@ export async function POST(req: NextRequest) {
     const date = new Date();
     const createDate = moment(date).format("YYYYMMDDHHmmss");
     const orderId = moment(date).format("DDHHmmss");
-    const expireDate = moment(date).add(10, 'minutes').format("YYYYMMDDHHmmss");
     const ipAddr = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
 
     let vnp_Params: Record<string, string | number> = {
@@ -35,7 +34,6 @@ export async function POST(req: NextRequest) {
       vnp_ReturnUrl: returnUrl,
       vnp_IpAddr: ipAddr,
       vnp_CreateDate: createDate,
-      vnp_ExpireDate: expireDate,
     };
 
     // Hàm sort và encode giống như web đặt vé
