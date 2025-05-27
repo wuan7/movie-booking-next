@@ -11,9 +11,9 @@ const luaHoldSeats = `
     end
   end
   for i=1,#KEYS do
-    redis.call('set', KEYS[i], ARGV[1], 'EX', 420)
+    redis.call('set', KEYS[i], ARGV[1], 'EX', 720)
   end
-  redis.call('set', ARGV[2], ARGV[3], 'EX', 420)
+  redis.call('set', ARGV[2], ARGV[3], 'EX', 720)
   return 1
 `;
 
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     await seatQueue.add(
       "release-seat",
       { userId, showtimeId, seatIds, holdId },
-      { delay: 6 * 60 * 1000 }
+      { delay: 11 * 60 * 1000 }
     );
     // Push realtime event cập nhật trạng thái ghế
     await pusherServer.trigger(`showtime-${showtimeId}`, "seat-status-changed", {

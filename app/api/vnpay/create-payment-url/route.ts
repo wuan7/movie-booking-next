@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     const date = new Date();
     const createDate = moment(date).format("YYYYMMDDHHmmss");
     const orderId = moment(date).format("DDHHmmss");
-    const expireDate = moment(date).add(5, 'minutes').format("YYYYMMDDHHmmss");
+    const expireDate = moment(date).add(10, 'minutes').format("YYYYMMDDHHmmss");
     const ipAddr = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
 
     let vnp_Params: Record<string, string | number> = {
