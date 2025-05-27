@@ -115,9 +115,7 @@ export async function GET(req: NextRequest) {
       });
 
       // Chuyển hướng về trang kết quả
-      return NextResponse.redirect(
-        `${VNPAY_CONFIG.returnUrl}`
-      );
+      return NextResponse.redirect(`${VNPAY_CONFIG.returnUrl}`);
     } catch (error) {
       console.error("Lỗi transaction:", error);
       return NextResponse.json(
@@ -126,6 +124,31 @@ export async function GET(req: NextRequest) {
       );
     }
   } else {
+    const redisKey = `hold:${showtimeId}:${holdId}`;
+    const holdData = await redis.get(redisKey);
+
+    if (!holdData) {
+      return NextResponse.json(
+        {
+          message: "Phiên giữ ghế đã hết hạn. Vui lòng đặt lại.",
+          success: false,
+        },
+        { status: 410 }
+      );
+    }
+
+    const { seatIds } = JSON.parse(holdData);
+    await prisma.showtimeSeat.updateMany({
+      where: { id: { in: seatIds } },
+      data: { status: "AVAILABLE" },
+    });
+    
+    await pusherServer.trigger(
+      `showtime-${showtimeId}`,
+      "seat-status-changed",
+      { seatIds, status: "AVAILABLE" }
+    );
+    await redis.del(redisKey);
     return NextResponse.redirect(`${VNPAY_CONFIG.returnUrl}?success=false`);
   }
 }
