@@ -134,6 +134,14 @@ const Header = () => {
                         </Link>
                       );
                     })}
+                    {session.status !== "authenticated" && (
+                      <div className=" flex gap-2">
+                        <Button variant="outline" onClick={openLogin}>
+                          Đăng nhập
+                        </Button>
+                        <Button onClick={openRegister}>Đăng ký</Button>
+                      </div>
+                    )}
                   </div>
                 </SheetContent>
               </Sheet>

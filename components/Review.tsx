@@ -152,7 +152,7 @@ const Review = ({ movieId }: ReviewProps) => {
                   alt={r.user.name || "Anonymous"}
                   width={32}
                   height={32}
-                  className="rounded-full"
+                  className="rounded-full w-8 h-8 object-cover"
                 />
                 <div>
                   <p className="font-semibold text-sm">{r.user.name}</p>

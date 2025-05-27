@@ -9,7 +9,7 @@ import { ShowtimeExpanded } from "../../types";
 import { cn } from "../../lib/utils";
 import { CircleX, Loader } from "lucide-react";
 import { Button } from "../ui/button";
-import { getShowtimeById } from "../../actions/showtime";
+import { getShowtimeById, updateSeatStatus } from "../../actions/showtime";
 import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import { getHeldSeatsByShowtimeId } from "../../actions/booking";
@@ -103,6 +103,10 @@ useEffect(() => {
           )),
         })),
       });
+      const fetchUpdateSeatStatus = async () => {
+        await updateSeatStatus(showtimeId, payload.seatIds, payload.status);
+      }
+      fetchUpdateSeatStatus();
      
     });
     return () => {
@@ -220,6 +224,7 @@ const handleSeatClick = (seat: Seat) => {
   }, 0);
 
   const handleBuyTicket = async () => {
+    if(session?.status === "unauthenticated") return toast.warning("Vui lớng đăng nhập");
     if (selectedSeats.length === 0) return toast.warning("Vui lớng chọn ghế");
     const data = {
       showtimeId,
