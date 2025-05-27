@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎬 Website Bán Vé Xem Phim
 
-## Getting Started
+Đây là một website đặt vé xem phim hiện đại, được xây dựng với **Next.js**, **Tailwind CSS**, **Prisma**, **NextAuth** và nhiều thư viện mạnh mẽ khác. Ứng dụng cho phép người dùng duyệt phim, chọn suất chiếu, chọn ghế và đặt vé một cách nhanh chóng, mượt mà và thân thiện với thiết bị di động.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Tính năng nổi bật
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- 🔐 Đăng nhập bằng tài khoản hoặc Google (NextAuth)
+- 🗓️ Quản lý suất chiếu, loại ghế, giá vé
+- 🎟️ Đặt vé theo thời gian thực với Pusher
+- 🪑 Lựa chọn ghế trực quan
+- 📅 Chọn ngày giờ bằng giao diện hiện đại
+- 🖼️ Tải ảnh qua Cloudinary, tối ưu hình ảnh
+- 💬 Viết bài đánh giá bằng trình soạn thảo Tiptap
+- 🔄 Tự động hủy đơn đặt vé quá hạn với Redis + BullMQ
+- 📱 Giao diện responsive, tối ưu cho thiết bị di động
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Công nghệ sử dụng
 
-## Learn More
+| Công nghệ          | Mô tả                                              |
+|--------------------|----------------------------------------------------|
+| **Next.js**        | Framework React hỗ trợ SSR, routing                |
+| **Tailwind CSS**   | Thư viện CSS utility hiện đại                      |
+| **Prisma**         | ORM kết nối cơ sở dữ liệu                           |
+| **NextAuth**       | Xác thực người dùng và quản lý phiên đăng nhập     |
+| **BullMQ + Redis** | Xử lý hàng đợi, tự động hủy vé                     |
+| **Cloudinary**     | Quản lý và tối ưu hình ảnh                          |
+| **Zod + RHF**      | Xử lý form và xác thực dữ liệu                     |
+| **Pusher**         | Truyền dữ liệu thời gian thực (chọn ghế)           |
+| **Tiptap**         | Trình soạn thảo văn bản phong phú                   |
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📦 Thư viện chính đã cài đặt
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+> Xem đầy đủ tại `package.json`. Một số thư viện nổi bật gồm:
 
-## Deploy on Vercel
+- **UI & Styling**: `tailwindcss`, `clsx`, `lucide-react`, `tw-animate-css`
+- **Forms**: `react-hook-form`, `zod`, `@hookform/resolvers`
+- **Xác thực**: `next-auth`, `@auth/prisma-adapter`
+- **Quản lý trạng thái**: `jotai`
+- **Trình soạn thảo**: `@tiptap/*`
+- **Carousel**: `embla-carousel-react`, `embla-carousel-autoplay`
+- **Thời gian**: `date-fns`, `moment`, `react-day-picker`
+- **Khác**: `cloudinary`, `uuid`, `qs`, `remove-accents`, `reading-time`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🗂️ Cấu trúc thư mục
+
+💳 Tích hợp thanh toán
+Tài khoản Test thanh toán:Ngân hàng NCB Số thẻ: 9704198526191432198; Tên chủ thẻ: NGUYEN VAN A; Ngày phát hành: 07/15; Mật khẩu OTP: 123456

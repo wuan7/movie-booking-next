@@ -1,0 +1,349 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  imageUrl      String?
+  imagePublicId String?
+  password      String?
+  accounts      Account[]
+  role          Role      @default(USER)
+  bookings      Booking[]
+  reviews       Review[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Company {
+  id            String  @id @default(uuid())
+  name          String
+  description   String
+  imageUrl      String
+  imagePublicId String
+  Brands        Brand[]
+}
+
+model Brand {
+  id        String     @id @default(uuid())
+  name      String
+  address   String
+  companyId String
+  company   Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  rooms     Room[]
+  showtimes Showtime[]
+}
+
+model Room {
+  id          String     @id @default(uuid())
+  name        String
+  brandId     String
+  totalSeats  Int
+  description String
+  brand       Brand      @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  roomType    RoomType
+  showtimes   Showtime[]
+  rows        Row[]
+}
+
+model Row {
+  id        String @id @default(uuid())
+  rowNumber Int
+  rowName   String
+  roomId    String
+  room      Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  seats     Seat[]
+}
+
+model Seat {
+  id         String     @id @default(uuid())
+  seatCode   String // e.g. "A5"
+  rowName    String
+  seatType   SeatType
+  centerType CenterType
+  rowId      String
+  row        Row        @relation(fields: [rowId], references: [id], onDelete: Cascade)
+}
+
+model Showtime {
+  id         String        @id @default(uuid())
+  movieId    String
+  companyId  String
+  brandId    String
+  roomId     String
+  startTime  DateTime
+  endTime    DateTime
+  showDate   DateTime
+  seatPrices SeatPrice[]
+  tickets    Ticket[]
+  bookings   Booking[]
+  rows       ShowtimeRow[]
+  movie      Movie         @relation(fields: [movieId], references: [id])
+  room       Room          @relation(fields: [roomId], references: [id])
+  brand      Brand         @relation(fields: [brandId], references: [id])
+}
+
+model ShowtimeRow {
+  id         String         @id @default(uuid())
+  showtimeId String
+  rowName    String // Tên hàng ghế (ví dụ: A, B, C...)
+  seats      ShowtimeSeat[]
+  showtime   Showtime       @relation(fields: [showtimeId], references: [id], onDelete: Cascade)
+}
+
+model ShowtimeSeat {
+  id         String      @id @default(cuid())
+  seatNumber String
+  seatCode   String
+  seatType   String
+  centerType String
+  status     String
+  row        ShowtimeRow @relation(fields: [rowId], references: [id], onDelete: Cascade)
+  rowId      String
+  ticket     Ticket[]
+}
+
+model SeatPrice {
+  id         String   @id @default(uuid())
+  showtimeId String
+  seatType   SeatType
+  price      Int
+
+  showtime Showtime @relation(fields: [showtimeId], references: [id], onDelete: Cascade)
+
+  @@unique([showtimeId, seatType])
+}
+
+model Movie {
+  id            String       @id @default(uuid())
+  title         String
+  nameUnsigned  String
+  slug          String       @unique
+  description   String
+  imageUrl      String
+  imagePublicId String
+  trailerUrl    String
+  director      String
+  duration      Int
+  status        MovieStatus
+  ageRating     AgeRating
+  releaseDate   DateTime
+  nationId      String
+  nation        Nation       @relation(fields: [nationId], references: [id])
+  castings      MovieCast[]
+  showtimes     Showtime[]
+  genres        MovieGenre[]
+  reviews       Review[]
+  banners       Banner[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model Nation {
+  id           String  @id @default(uuid())
+  name         String
+  nameUnsigned String
+  slug         String  @unique
+  movies       Movie[]
+}
+
+model Genre {
+  id           String       @id @default(uuid())
+  name         String       @unique
+  nameUnsigned String
+  slug         String       @unique
+  movies       MovieGenre[]
+}
+
+model MovieGenre {
+  movie   Movie  @relation(fields: [movieId], references: [id])
+  movieId String
+  genre   Genre  @relation(fields: [genreId], references: [id])
+  genreId String
+
+  @@id([movieId, genreId])
+}
+
+model Cast {
+  id       String      @id @default(uuid())
+  name     String
+  imageUrl String
+  castings MovieCast[]
+}
+
+model MovieCast {
+  movie   Movie  @relation(fields: [movieId], references: [id])
+  movieId String
+  cast    Cast   @relation(fields: [castId], references: [id])
+  castId  String
+
+  @@id([movieId, castId]) // composite primary key
+}
+
+enum MovieStatus {
+  NOW_SHOWING
+  COMING_SOON
+  STOPPED
+}
+
+enum RoomType {
+  TWO_D
+  THREE_D
+  IMAX
+  FOUR_DX
+}
+
+enum CenterType {
+  FIRST_LEFT
+  FIRST_RIGHT
+  FIRST_MIDDLE
+  MIDDLE_LEFT
+  MIDDLE_MIDDLE
+  MIDDLE_RIGHT
+  LAST_LEFT
+  LAST_MIDDLE
+  LAST_RIGHT
+  NOMAL
+}
+
+enum SeatType {
+  STANDARD
+  FOUR_DX
+  VIP
+  COUPLE
+  EMPTY
+}
+
+enum AgeRating {
+  P // Phổ biến
+  C13 // Cấm dưới 13
+  C16 // Cấm dưới 16
+  C18 // Cấm dưới 18
+}
+
+enum TicketStatus {
+  BOOKED
+  CANCELLED
+  PAID
+}
+
+model Ticket {
+  id             String @id @default(uuid())
+  bookingId      String
+  showtimeSeatId String
+  
+  showtimeId     String
+
+  status TicketStatus @default(BOOKED)
+
+  showtime     Showtime     @relation(fields: [showtimeId], references: [id])
+  booking      Booking      @relation(fields: [bookingId], references: [id])
+  showtimeSeat ShowtimeSeat @relation(fields: [showtimeSeatId], references: [id])
+  createdAt    DateTime     @default(now())
+
+ 
+}
+
+model Booking {
+  id         String   @id @default(uuid())
+  userId     String
+  showtimeId String
+  totalPrice Int
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id])
+  showtime Showtime @relation(fields: [showtimeId], references: [id])
+  tickets  Ticket[]
+}
+
+model PostCategory {
+  id           String    @id @default(uuid())
+  name         String
+  nameUnsigned String
+  slug         String    @unique
+  articles     Article[]
+}
+
+model Article {
+  id             String       @id @default(uuid())
+  title          String
+  content        String // Nội dung bài viết (HTML hoặc Markdown)
+  slug           String       @unique
+  creator        String
+  imageUrl       String?
+  imagePublicId  String?
+  readingTime    Int // Thời gian đọc tính bằng phút
+  postCategoryId String
+  postCategory   PostCategory @relation(fields: [postCategoryId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([slug]) // Tối ưu tìm kiếm bài viết theo slug
+}
+
+model Review {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movieId     String
+  movie       Movie  @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  rating        Int
+  comment       String
+  imageUrl      String?
+  imagePublicId String?
+  createdAt     DateTime @default(now())
+
+  @@index([movieId, userId])
+}
+
+model Banner {
+  id        String   @id @default(uuid())
+  movieId   String   @unique
+  active    Boolean  @default(true)
+  movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  imageUrl       String
+  imagePublicId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
